@@ -1,0 +1,74 @@
+﻿services:
+  mqtt:
+    image: eclipse-mosquitto:2
+    ports:
+      - "1883:1883"
+    volumes:
+      - ./workspace/hatchery/mosquitto:/mosquitto/data
+
+  hatchery:
+    build:
+      context: .
+      dockerfile: hatchery/Dockerfile
+    depends_on:
+      - mqtt
+    ports:
+      - "8090:8090"
+    environment:
+      HATCHERY_DATABASE_PATH: /app/workspace/hatchery/hatchery.db
+      HATCHERY_ENABLE_SCHEDULER: "true"
+      HATCHERY_SERVICE_NAME: hatchery-service
+      HATCHERY_MQTT_ENABLED: "true"
+      HATCHERY_MQTT_HOST: mqtt
+      HATCHERY_MQTT_PORT: "1883"
+      HATCHERY_MQTT_KEEPALIVE_SEC: "30"
+      HATCHERY_MQTT_CLIENT_ID: hatchery-compose
+      HATCHERY_MQTT_TOPIC_PREFIX: hatchery
+      HATCHERY_MQTT_QOS: "1"
+      HATCHERY_MQTT_RETAIN: "false"
+      HATCHERY_REAL_ADAPTER_ENABLED: "false"
+      HATCHERY_REAL_DEFAULT_TIMEOUT_SEC: "30"
+      HATCHERY_REAL_RELAY_MAP_JSON: '{}'
+    volumes:
+      - ./workspace:/app/workspace
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8090/readyz', timeout=2).read()"]
+      interval: 10s
+      timeout: 3s
+      retries: 5
+      start_period: 10s
+
+  hatchery-bridge:
+    build:
+      context: .
+      dockerfile: hatchery/Dockerfile
+    profiles: ["bridge"]
+    depends_on:
+      hatchery:
+        condition: service_healthy
+    ports:
+      - "8190:8190"
+    environment:
+      HATCHERY_BRIDGE_SERVICE_URL: http://hatchery:8090
+      HATCHERY_BRIDGE_HOST: 0.0.0.0
+      HATCHERY_BRIDGE_PORT: "8190"
+      HATCHERY_BRIDGE_NAME: hatchery-bridge
+    command: ["python", "-m", "hatchery.orchestrator_bridge.runner", "--service-url", "http://hatchery:8090", "--host", "0.0.0.0", "--port", "8190"]
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8190/healthz', timeout=2).read()"]
+      interval: 10s
+      timeout: 3s
+      retries: 5
+      start_period: 10s
+
+  nanobot-bridge:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    profiles: ["legacy-bridge"]
+    depends_on:
+      hatchery:
+        condition: service_healthy
+    volumes:
+      - ./workspace:/root/.nanobot/workspace
+    command: ["gateway"]

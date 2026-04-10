@@ -1,0 +1,778 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>海参育苗一期验收台</title>
+  <style>
+    :root {
+      --ink: #dff6f4;
+      --muted: #8fb9b4;
+      --sea: #0a4445;
+      --reef: #10716e;
+      --foam: #d0fff9;
+      --sand: #f0d8aa;
+      --panel: rgba(8, 28, 32, 0.86);
+      --line: rgba(142, 213, 204, 0.2);
+      --warn: #ffb86b;
+      --danger: #ff6f61;
+      --success: #78f3c9;
+      --shadow: 0 20px 50px rgba(0, 0, 0, 0.35);
+    }
+
+    * { box-sizing: border-box; }
+
+    html, body {
+      margin: 0;
+      min-height: 100%;
+      color: var(--ink);
+      background:
+        radial-gradient(circle at top left, rgba(81, 201, 186, 0.12), transparent 28%),
+        radial-gradient(circle at bottom right, rgba(255, 184, 107, 0.10), transparent 24%),
+        linear-gradient(135deg, #031214 0%, #071d21 44%, #0a1117 100%);
+      font-family: "Source Han Sans SC", "Microsoft YaHei UI", "PingFang SC", sans-serif;
+    }
+
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      background-image:
+        linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+      background-size: 28px 28px;
+      mask-image: linear-gradient(to bottom, rgba(0, 0, 0, 0.45), transparent 92%);
+    }
+
+    a { color: var(--foam); }
+
+    .shell {
+      width: min(1440px, calc(100vw - 32px));
+      margin: 0 auto;
+      padding: 28px 0 40px;
+    }
+
+    .hero {
+      position: relative;
+      overflow: hidden;
+      border: 1px solid var(--line);
+      border-radius: 28px;
+      padding: 28px;
+      background:
+        linear-gradient(150deg, rgba(10, 68, 69, 0.95), rgba(10, 24, 28, 0.92)),
+        linear-gradient(110deg, rgba(255, 255, 255, 0.04), transparent);
+      box-shadow: var(--shadow);
+    }
+
+    .hero::after {
+      content: "";
+      position: absolute;
+      width: 300px;
+      height: 300px;
+      right: -80px;
+      top: -120px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(120, 243, 201, 0.25), transparent 70%);
+    }
+
+    .eyebrow {
+      letter-spacing: 0.24em;
+      text-transform: uppercase;
+      font-size: 0.76rem;
+      color: var(--sand);
+      margin-bottom: 14px;
+    }
+
+    h1 {
+      margin: 0;
+      font-size: clamp(2.4rem, 4vw, 4.4rem);
+      line-height: 0.95;
+      letter-spacing: 0.02em;
+    }
+
+    .hero p {
+      max-width: 720px;
+      color: var(--muted);
+      font-size: 1rem;
+      line-height: 1.6;
+      margin: 16px 0 0;
+    }
+
+    .hero-links {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-top: 22px;
+    }
+
+    .link-chip, button {
+      appearance: none;
+      border: 1px solid rgba(208, 255, 249, 0.18);
+      background: linear-gradient(180deg, rgba(48, 112, 110, 0.95), rgba(18, 47, 50, 0.95));
+      color: var(--ink);
+      padding: 11px 16px;
+      border-radius: 999px;
+      cursor: pointer;
+      transition: transform 160ms ease, box-shadow 160ms ease, border-color 160ms ease;
+      box-shadow: 0 8px 20px rgba(4, 12, 15, 0.25);
+      font: inherit;
+    }
+
+    button.secondary, .link-chip.secondary {
+      background: rgba(9, 27, 31, 0.92);
+      color: var(--foam);
+    }
+
+    button:hover, .link-chip:hover {
+      transform: translateY(-1px);
+      border-color: rgba(208, 255, 249, 0.4);
+      box-shadow: 0 14px 28px rgba(4, 12, 15, 0.34);
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      gap: 18px;
+      margin-top: 20px;
+    }
+
+    .card {
+      border: 1px solid var(--line);
+      border-radius: 24px;
+      padding: 20px;
+      background:
+        linear-gradient(180deg, rgba(14, 41, 46, 0.92), rgba(7, 20, 25, 0.92)),
+        linear-gradient(140deg, rgba(255, 255, 255, 0.04), transparent 55%);
+      box-shadow: var(--shadow);
+      animation: fade-up 480ms ease both;
+    }
+
+    .card h2 {
+      margin: 0;
+      font-size: 1.2rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+    }
+
+    .card p {
+      color: var(--muted);
+      font-size: 0.94rem;
+      line-height: 1.55;
+      margin: 10px 0 0;
+    }
+
+    .card .row, .toolbar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 16px;
+      align-items: center;
+    }
+
+    .field, textarea, select {
+      width: 100%;
+      border-radius: 16px;
+      border: 1px solid rgba(208, 255, 249, 0.13);
+      background: rgba(4, 14, 18, 0.78);
+      color: var(--foam);
+      padding: 12px 14px;
+      font: inherit;
+      outline: none;
+      transition: border-color 160ms ease, box-shadow 160ms ease;
+    }
+
+    .field:focus, textarea:focus, select:focus {
+      border-color: rgba(120, 243, 201, 0.55);
+      box-shadow: 0 0 0 3px rgba(120, 243, 201, 0.12);
+    }
+
+    textarea {
+      min-height: 180px;
+      resize: vertical;
+      font-family: Consolas, "Lucida Console", monospace;
+      font-size: 0.92rem;
+      line-height: 1.45;
+    }
+
+    .mini-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+      gap: 12px;
+      margin-top: 16px;
+    }
+
+    .status-strip {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 12px;
+      margin-top: 16px;
+    }
+
+    .status-pill {
+      border-radius: 18px;
+      padding: 14px 16px;
+      background: rgba(7, 18, 22, 0.76);
+      border: 1px solid var(--line);
+    }
+
+    .status-pill strong {
+      display: block;
+      font-size: 0.8rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--sand);
+      margin-bottom: 6px;
+    }
+
+    .status-ok { color: var(--success); }
+    .status-warn { color: var(--warn); }
+    .status-danger { color: var(--danger); }
+
+    pre {
+      margin: 16px 0 0;
+      padding: 16px;
+      min-height: 120px;
+      max-height: 340px;
+      overflow: auto;
+      border-radius: 18px;
+      border: 1px solid rgba(208, 255, 249, 0.12);
+      background: linear-gradient(180deg, rgba(3, 11, 15, 0.94), rgba(3, 12, 17, 0.84));
+      color: #d9fff8;
+      font-family: Consolas, "Lucida Console", monospace;
+      font-size: 0.88rem;
+      line-height: 1.5;
+      white-space: pre-wrap;
+      word-break: break-word;
+    }
+
+    .span-2 { grid-column: span 2; }
+
+    .footer-note {
+      margin-top: 18px;
+      color: var(--muted);
+      font-size: 0.85rem;
+    }
+
+    @keyframes fade-up {
+      from { opacity: 0; transform: translateY(12px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @media (max-width: 860px) {
+      .span-2 { grid-column: span 1; }
+    }
+  </style>
+</head>
+<body>
+  <main class="shell">
+    <section class="hero">
+      <div class="eyebrow">海参育苗车间 / 浏览器验收台</div>
+      <h1>海参育苗一期验收台</h1>
+      <p>
+        一个面向一期 sim 和 shadow 闭环的轻量浏览器验收台。你可以在这里直接回放样例信号、
+        提交受控指令、查看状态时间线、执行运维控制，并验证 bridge 白名单工具是否按预期工作，
+        不必再反复切回 PowerShell 或手敲每条接口。
+      </p>
+      <div class="hero-links">
+        <a class="link-chip" href="/docs" target="_blank" rel="noreferrer">打开 API 文档</a>
+        <a class="link-chip secondary" href="/redoc" target="_blank" rel="noreferrer">打开 ReDoc</a>
+        <button class="secondary" type="button" id="loadAllHealth">刷新健康状态</button>
+      </div>
+      <div class="status-strip">
+        <div class="status-pill">
+          <strong>API 地址</strong>
+          <input class="field" id="apiBase" />
+        </div>
+        <div class="status-pill">
+          <strong>Bridge 地址</strong>
+          <input class="field" id="bridgeBase" />
+        </div>
+        <div class="status-pill">
+          <strong>当前状态</strong>
+          <div id="headlineStatus">等待首次联检。</div>
+        </div>
+      </div>
+      <div class="mini-grid" style="margin-top: 14px;">
+        <input class="field" id="apiToken" placeholder="API Token（开启认证时填写）" />
+        <input class="field" id="bridgeToken" placeholder="Bridge Token（开启认证时填写）" />
+        <input class="field" id="requestActor" value="gui-operator" placeholder="操作身份（X-Hatchery-Actor）" />
+      </div>
+    </section>
+
+    <section class="grid">
+      <article class="card">
+        <h2>系统联检</h2>
+        <p>检查 hatchery 服务与 bridge runner 的健康状态和就绪状态。</p>
+        <div class="toolbar">
+          <button type="button" id="checkApiHealth">API 健康</button>
+          <button type="button" id="checkApiReady" class="secondary">API 就绪</button>
+          <button type="button" id="checkBridgeHealth">Bridge 健康</button>
+          <button type="button" id="checkBridgeReady" class="secondary">Bridge 就绪</button>
+        </div>
+        <pre id="healthOutput">尚未执行联检。</pre>
+      </article>
+
+      <article class="card">
+        <h2>池状态看板</h2>
+        <p>查询当前池状态，或根据最新信号生成动作计划。</p>
+        <div class="mini-grid">
+          <input class="field" id="poolId" value="pool-01" placeholder="池编号，例如 pool-01" />
+          <input class="field" id="planTraceId" value="trace-gui-plan-001" placeholder="计划 trace_id" />
+        </div>
+        <div class="toolbar">
+          <button type="button" id="queryPoolState">查询池状态</button>
+          <button type="button" id="createActionPlan" class="secondary">生成动作计划</button>
+        </div>
+        <pre id="poolOutput">池状态与计划结果显示在这里。</pre>
+      </article>
+
+      <article class="card span-2">
+        <h2>信号回放台</h2>
+        <p>直接在页面中回放遥测和生物感知样例。</p>
+        <div class="grid" style="margin-top: 16px;">
+          <div>
+            <div class="toolbar">
+              <button type="button" id="loadTelemetrySample">载入遥测样例</button>
+              <button type="button" id="submitTelemetry" class="secondary">提交遥测</button>
+            </div>
+            <textarea id="telemetryBody"></textarea>
+          </div>
+          <div>
+            <div class="toolbar">
+              <button type="button" id="loadBioSample">载入生物感知样例</button>
+              <button type="button" id="submitBio" class="secondary">提交生物感知</button>
+            </div>
+            <textarea id="bioBody"></textarea>
+          </div>
+        </div>
+        <pre id="signalOutput">信号接入结果显示在这里。</pre>
+      </article>
+
+      <article class="card span-2">
+        <h2>指令通道</h2>
+        <p>提交低风险或高风险指令，查看状态与时间线，并在需要时完成审批。</p>
+        <div class="toolbar">
+          <button type="button" id="loadFeedCommand">载入投喂指令</button>
+          <button type="button" id="loadHighRiskCommand" class="secondary">载入换水指令</button>
+          <button type="button" id="submitCommand">提交指令</button>
+          <button type="button" id="queryCommand" class="secondary">查询指令</button>
+          <button type="button" id="queryTimeline" class="secondary">查询时间线</button>
+        </div>
+        <textarea id="commandBody"></textarea>
+        <div class="mini-grid">
+          <input class="field" id="approvalId" placeholder="审批单 ID" />
+          <input class="field" id="approvalOperator" value="owner-001" placeholder="操作人" />
+          <input class="field" id="approvalReason" value="来自 GUI 的审批" placeholder="原因" />
+        </div>
+        <div class="toolbar">
+          <button type="button" id="confirmApproval">审批通过</button>
+          <button type="button" id="rejectApproval" class="secondary">审批拒绝</button>
+        </div>
+        <pre id="commandOutput">指令结果显示在这里。</pre>
+      </article>
+
+      <article class="card">
+        <h2>运维控制台</h2>
+        <p>下发运维控制指令，并查看命令、审批和 MQTT 运行汇总。</p>
+        <div class="mini-grid">
+          <input class="field" id="opsPoolId" value="pool-01" placeholder="池编号" />
+          <select id="opsAction" class="field">
+            <option value="manual_override_on">manual_override_on</option>
+            <option value="manual_override_off">manual_override_off</option>
+            <option value="emergency_stop">emergency_stop</option>
+          </select>
+          <input class="field" id="opsOperator" value="ops-001" placeholder="操作人" />
+          <input class="field" id="opsReason" value="GUI 验收" placeholder="原因" />
+        </div>
+        <div class="toolbar">
+          <button type="button" id="submitOpsControl">提交运维控制</button>
+          <button type="button" id="fetchOpsSummary" class="secondary">获取汇总</button>
+        </div>
+        <pre id="opsOutput">运维结果显示在这里。</pre>
+      </article>
+
+      <article class="card">
+        <h2>审计台账</h2>
+        <p>按条件筛选审计记录，或以 NDJSON 导出。</p>
+        <div class="mini-grid">
+          <input class="field" id="auditTraceId" placeholder="trace_id" />
+          <input class="field" id="auditPoolId" placeholder="池编号" />
+          <input class="field" id="auditEventType" placeholder="event_type" />
+          <input class="field" id="auditFromTs" placeholder="from_ts" />
+          <input class="field" id="auditToTs" placeholder="to_ts" />
+        </div>
+        <div class="toolbar">
+          <button type="button" id="queryAudits">查询审计</button>
+          <button type="button" id="exportAudits" class="secondary">导出审计</button>
+        </div>
+        <pre id="auditOutput">审计结果显示在这里。</pre>
+      </article>
+
+      <article class="card span-2">
+        <h2>Bridge 工具台</h2>
+        <p>查看白名单工具，并通过 bridge 调用 hatchery 业务服务。</p>
+        <div class="mini-grid">
+          <select id="bridgeTool" class="field"></select>
+          <button type="button" id="refreshBridgeTools">刷新工具</button>
+          <button type="button" id="loadBridgeSample" class="secondary">载入工具样例</button>
+          <button type="button" id="invokeBridgeTool">调用工具</button>
+        </div>
+        <textarea id="bridgePayload"></textarea>
+        <pre id="bridgeOutput">Bridge 返回结果显示在这里。</pre>
+      </article>
+
+      <article class="card span-2">
+        <h2>活动日志</h2>
+        <p>本页面发出的每个请求都会在这里记录时间戳和目标接口。</p>
+        <pre id="activityOutput">还没有活动记录。</pre>
+        <div class="footer-note">
+          提示：如果 bridge runner 没启动，API 面板仍可使用。启动 <code>8190</code> 端口上的 bridge 后，点击
+          <em>刷新工具</em>。
+        </div>
+      </article>
+    </section>
+  </main>
+
+  <script>
+    const state = { bridgeTools: [] };
+
+    function nowStamp() {
+      const d = new Date();
+      const pad = (value) => String(value).padStart(2, "0");
+      return [
+        d.getUTCFullYear(),
+        pad(d.getUTCMonth() + 1),
+        pad(d.getUTCDate()),
+        pad(d.getUTCHours()),
+        pad(d.getUTCMinutes()),
+        pad(d.getUTCSeconds()),
+      ].join("");
+    }
+
+    function jsonStringify(value) {
+      return JSON.stringify(value, null, 2);
+    }
+
+    function setPre(id, value) {
+      document.getElementById(id).textContent = typeof value === "string" ? value : jsonStringify(value);
+    }
+
+    function logActivity(label, payload) {
+      const output = document.getElementById("activityOutput");
+      const line = `[${new Date().toLocaleTimeString()}] ${label}\n${typeof payload === "string" ? payload : jsonStringify(payload)}\n\n`;
+      output.textContent = line + output.textContent;
+    }
+
+    function apiBase() {
+      return document.getElementById("apiBase").value.replace(/\/$/, "");
+    }
+
+    function bridgeBase() {
+      return document.getElementById("bridgeBase").value.replace(/\/$/, "");
+    }
+
+    function authHeadersFor(base) {
+      const token = base === bridgeBase()
+        ? document.getElementById("bridgeToken").value.trim()
+        : document.getElementById("apiToken").value.trim();
+      const actor = document.getElementById("requestActor").value.trim();
+      const headers = {};
+      if (token) {
+        headers["X-Hatchery-Token"] = token;
+      }
+      if (actor) {
+        headers["X-Hatchery-Actor"] = actor;
+      }
+      return headers;
+    }
+
+    function buildUrl(base, path, params) {
+      const url = new URL(base + path);
+      if (params) {
+        for (const [key, value] of Object.entries(params)) {
+          if (value !== undefined && value !== null && value !== "") {
+            url.searchParams.set(key, value);
+          }
+        }
+      }
+      return url;
+    }
+
+    async function requestJson(base, path, options = {}) {
+      const { method = "GET", body, params } = options;
+      const fetchOptions = { method, headers: authHeadersFor(base) };
+      if (body !== undefined) {
+        fetchOptions.headers["Content-Type"] = "application/json";
+        fetchOptions.body = JSON.stringify(body);
+      }
+      const response = await fetch(buildUrl(base, path, params), fetchOptions);
+      const text = await response.text();
+      const parsed = text ? tryParseJson(text) : null;
+      if (!response.ok) {
+        throw { status: response.status, payload: parsed ?? text, path };
+      }
+      return parsed ?? text;
+    }
+
+    async function requestText(base, path, params) {
+      const response = await fetch(buildUrl(base, path, params), { headers: authHeadersFor(base) });
+      const text = await response.text();
+      if (!response.ok) {
+        throw { status: response.status, payload: text, path };
+      }
+      return text;
+    }
+
+    function tryParseJson(text) {
+      try { return JSON.parse(text); } catch { return null; }
+    }
+
+    function readJsonTextarea(id) {
+      return JSON.parse(document.getElementById(id).value);
+    }
+
+    function setHeadline(text, level = "ok") {
+      const el = document.getElementById("headlineStatus");
+      el.textContent = text;
+      el.className = level === "danger" ? "status-danger" : level === "warn" ? "status-warn" : "status-ok";
+    }
+
+    function bridgeSample(toolName) {
+      const stamp = nowStamp();
+      const samples = {
+        dispatch_perception_task: {
+          site_id: "site-001",
+          workshop_id: "ws-001",
+          pool_id: "pool-01",
+          mode: "sim",
+          ts: "2026-02-07T10:05:00Z",
+          payload: {
+            count: 120,
+            activity_score: 0.65,
+            hunger_score: 0.85,
+            confidence: 0.98,
+            model_version: "replay-v1"
+          }
+        },
+        create_action_plan: {
+          pool_id: "pool-01",
+          trace_id: `trace-bridge-plan-${stamp}`,
+          model_version: "policy-v1"
+        },
+        request_high_risk_approval: {
+          command_id: "cmd-water-" + stamp,
+          timeout_sec: 180,
+          remind_at_sec: 120,
+          provider: "local"
+        },
+        submit_safe_command: {
+          command_id: "cmd-bridge-" + stamp,
+          idempotency_key: "pool-01-feed-" + stamp,
+          trace_id: "trace-bridge-" + stamp,
+          mode: "sim",
+          action_type: "feed",
+          target: { site_id: "site-001", workshop_id: "ws-001", pool_id: "pool-01" },
+          params: { ratio: 0.6, duration_sec: 120 },
+          preconditions: {},
+          deadline_sec: 180,
+          degrade_policy: "",
+          dry_run: true
+        },
+        query_command_status: { command_id: "cmd-bridge-" + stamp },
+        query_pool_state: { pool_id: "pool-01" },
+        generate_shift_report: { trace_id: "" }
+      };
+      return samples[toolName] ?? {};
+    }
+
+    function loadDefaults() {
+      const locationPort = window.location.port || "8090";
+      document.getElementById("apiBase").value = `${window.location.protocol}//${window.location.hostname}:${locationPort}`;
+      document.getElementById("bridgeBase").value = `${window.location.protocol}//${window.location.hostname}:8190`;
+      document.getElementById("telemetryBody").value = jsonStringify({
+        site_id: "site-001",
+        workshop_id: "ws-001",
+        pool_id: "pool-01",
+        mode: "sim",
+        ts: "2026-02-07T10:00:00Z",
+        payload: { relay: 0, ph: 7.4, hzd: 3, rjy: 5.9, temp: 24.5 }
+      });
+      document.getElementById("bioBody").value = jsonStringify({
+        site_id: "site-001",
+        workshop_id: "ws-001",
+        pool_id: "pool-01",
+        mode: "sim",
+        ts: "2026-02-07T10:05:00Z",
+        payload: {
+          count: 120,
+          activity_score: 0.65,
+          hunger_score: 0.85,
+          confidence: 0.98,
+          model_version: "replay-v1"
+        }
+      });
+      loadFeedCommand();
+    }
+
+    function loadFeedCommand() {
+      const stamp = nowStamp();
+      document.getElementById("commandBody").value = jsonStringify({
+        command_id: "cmd-feed-" + stamp,
+        idempotency_key: "pool-01-feed-" + stamp,
+        trace_id: "trace-feed-" + stamp,
+        mode: "sim",
+        action_type: "feed",
+        target: { site_id: "site-001", workshop_id: "ws-001", pool_id: "pool-01" },
+        params: { ratio: 0.6, duration_sec: 120 },
+        preconditions: { min_do_mg_l: 5.0, max_temp_c: 29.0 },
+        deadline_sec: 180,
+        degrade_policy: "feed_60_percent_on_timeout",
+        dry_run: true
+      });
+    }
+
+    function loadHighRiskCommand() {
+      const stamp = nowStamp();
+      document.getElementById("commandBody").value = jsonStringify({
+        command_id: "cmd-water-" + stamp,
+        idempotency_key: "pool-01-water-change-" + stamp,
+        trace_id: "trace-water-" + stamp,
+        mode: "shadow",
+        action_type: "water_change",
+        target: { site_id: "site-001", workshop_id: "ws-001", pool_id: "pool-01" },
+        params: { ratio: 0.3, duration_sec: 180 },
+        preconditions: { min_do_mg_l: 5.0, max_temp_c: 29.0 },
+        deadline_sec: 180,
+        degrade_policy: "aerate_up_on_timeout",
+        dry_run: true
+      });
+    }
+
+    async function safeRun(outputId, label, fn) {
+      try {
+        const result = await fn();
+        setPre(outputId, result);
+        logActivity(label, result);
+        setHeadline(`${label}已完成`, "ok");
+        if (result && result.approval_id) {
+          document.getElementById("approvalId").value = result.approval_id;
+        }
+        if (result && result.trace_id) {
+          document.getElementById("auditTraceId").value = result.trace_id;
+        }
+        return result;
+      } catch (error) {
+        const payload = {
+          status: error.status ?? "客户端错误",
+          path: error.path ?? "未知",
+          detail: error.payload ?? String(error)
+        };
+        setPre(outputId, payload);
+        logActivity(`${label}失败`, payload);
+        setHeadline(`${label}失败`, "danger");
+        return null;
+      }
+    }
+
+    async function refreshBridgeTools() {
+      const payload = await requestJson(bridgeBase(), "/tools");
+      state.bridgeTools = payload.tools ?? [];
+      const select = document.getElementById("bridgeTool");
+      select.innerHTML = "";
+      for (const tool of state.bridgeTools) {
+        const option = document.createElement("option");
+        option.value = tool.name;
+        option.textContent = tool.name;
+        select.appendChild(option);
+      }
+      if (state.bridgeTools.length) {
+        document.getElementById("bridgePayload").value = jsonStringify(bridgeSample(state.bridgeTools[0].name));
+      }
+      return payload;
+    }
+
+    document.addEventListener("DOMContentLoaded", async () => {
+      loadDefaults();
+
+      document.getElementById("loadAllHealth").addEventListener("click", async () => {
+        await safeRun("healthOutput", "执行全量联检", async () => {
+          const [apiHealth, apiReady, bridgeHealth, bridgeReady] = await Promise.all([
+            requestJson(apiBase(), "/healthz"),
+            requestJson(apiBase(), "/readyz"),
+            requestJson(bridgeBase(), "/healthz"),
+            requestJson(bridgeBase(), "/readyz"),
+          ]);
+          return { apiHealth, apiReady, bridgeHealth, bridgeReady };
+        });
+      });
+
+      document.getElementById("checkApiHealth").addEventListener("click", () => safeRun("healthOutput", "查询 API 健康", () => requestJson(apiBase(), "/healthz")));
+      document.getElementById("checkApiReady").addEventListener("click", () => safeRun("healthOutput", "查询 API 就绪", () => requestJson(apiBase(), "/readyz")));
+      document.getElementById("checkBridgeHealth").addEventListener("click", () => safeRun("healthOutput", "查询 Bridge 健康", () => requestJson(bridgeBase(), "/healthz")));
+      document.getElementById("checkBridgeReady").addEventListener("click", () => safeRun("healthOutput", "查询 Bridge 就绪", () => requestJson(bridgeBase(), "/readyz")));
+
+      document.getElementById("queryPoolState").addEventListener("click", () => safeRun("poolOutput", "查询池状态", () => requestJson(apiBase(), `/api/v1/pools/${encodeURIComponent(document.getElementById("poolId").value)}/state`)));
+      document.getElementById("createActionPlan").addEventListener("click", () => safeRun("poolOutput", "生成动作计划", () => requestJson(apiBase(), "/api/v1/decisions/plan", { method: "POST", body: { pool_id: document.getElementById("poolId").value, trace_id: document.getElementById("planTraceId").value, model_version: "policy-v1" } })));
+
+      document.getElementById("loadTelemetrySample").addEventListener("click", loadDefaults);
+      document.getElementById("submitTelemetry").addEventListener("click", () => safeRun("signalOutput", "提交遥测", () => requestJson(apiBase(), "/api/v1/telemetry/water-quality", { method: "POST", body: readJsonTextarea("telemetryBody") })));
+      document.getElementById("loadBioSample").addEventListener("click", () => {
+        document.getElementById("bioBody").value = jsonStringify({
+          site_id: "site-001",
+          workshop_id: "ws-001",
+          pool_id: document.getElementById("poolId").value,
+          mode: "sim",
+          ts: "2026-02-07T10:05:00Z",
+          payload: { count: 120, activity_score: 0.65, hunger_score: 0.85, confidence: 0.98, model_version: "replay-v1" }
+        });
+      });
+      document.getElementById("submitBio").addEventListener("click", () => safeRun("signalOutput", "提交生物感知", () => requestJson(apiBase(), "/api/v1/perception/bio", { method: "POST", body: readJsonTextarea("bioBody") })));
+
+      document.getElementById("loadFeedCommand").addEventListener("click", loadFeedCommand);
+      document.getElementById("loadHighRiskCommand").addEventListener("click", loadHighRiskCommand);
+      document.getElementById("submitCommand").addEventListener("click", () => safeRun("commandOutput", "提交指令", () => requestJson(apiBase(), "/api/v1/commands", { method: "POST", body: readJsonTextarea("commandBody") })));
+      document.getElementById("queryCommand").addEventListener("click", () => {
+        const payload = readJsonTextarea("commandBody");
+        return safeRun("commandOutput", "查询指令", () => requestJson(apiBase(), `/api/v1/commands/${encodeURIComponent(payload.command_id)}`));
+      });
+      document.getElementById("queryTimeline").addEventListener("click", () => {
+        const payload = readJsonTextarea("commandBody");
+        return safeRun("commandOutput", "查询时间线", () => requestJson(apiBase(), `/api/v1/ops/commands/${encodeURIComponent(payload.command_id)}/timeline`));
+      });
+      document.getElementById("confirmApproval").addEventListener("click", () => safeRun("commandOutput", "审批通过", () => requestJson(apiBase(), `/api/v1/approvals/${encodeURIComponent(document.getElementById("approvalId").value)}/confirm`, { method: "POST", body: { operator: document.getElementById("approvalOperator").value, reason: document.getElementById("approvalReason").value } })));
+      document.getElementById("rejectApproval").addEventListener("click", () => safeRun("commandOutput", "审批拒绝", () => requestJson(apiBase(), `/api/v1/approvals/${encodeURIComponent(document.getElementById("approvalId").value)}/reject`, { method: "POST", body: { operator: document.getElementById("approvalOperator").value, reason: document.getElementById("approvalReason").value } })));
+
+      document.getElementById("submitOpsControl").addEventListener("click", () => safeRun("opsOutput", "提交运维控制", () => requestJson(apiBase(), "/api/v1/ops/control-commands", { method: "POST", body: { mode: "sim", action_type: document.getElementById("opsAction").value, operator: document.getElementById("opsOperator").value, reason: document.getElementById("opsReason").value, target: { site_id: "site-001", workshop_id: "ws-001", pool_id: document.getElementById("opsPoolId").value }, params: {}, dry_run: true } })));
+      document.getElementById("fetchOpsSummary").addEventListener("click", () => safeRun("opsOutput", "获取运维汇总", () => requestJson(apiBase(), "/api/v1/ops/summary")));
+
+      document.getElementById("queryAudits").addEventListener("click", () => safeRun("auditOutput", "查询审计", () => requestJson(apiBase(), "/api/v1/audits", { params: { trace_id: document.getElementById("auditTraceId").value, pool_id: document.getElementById("auditPoolId").value, event_type: document.getElementById("auditEventType").value, from_ts: document.getElementById("auditFromTs").value, to_ts: document.getElementById("auditToTs").value } })));
+      document.getElementById("exportAudits").addEventListener("click", () => safeRun("auditOutput", "导出审计", () => requestText(apiBase(), "/api/v1/audits/export", { trace_id: document.getElementById("auditTraceId").value, pool_id: document.getElementById("auditPoolId").value, event_type: document.getElementById("auditEventType").value, from_ts: document.getElementById("auditFromTs").value, to_ts: document.getElementById("auditToTs").value })));
+
+      document.getElementById("refreshBridgeTools").addEventListener("click", () => safeRun("bridgeOutput", "刷新 Bridge 工具", refreshBridgeTools));
+      document.getElementById("bridgeTool").addEventListener("change", (event) => {
+        document.getElementById("bridgePayload").value = jsonStringify(bridgeSample(event.target.value));
+      });
+      document.getElementById("loadBridgeSample").addEventListener("click", () => {
+        const tool = document.getElementById("bridgeTool").value;
+        document.getElementById("bridgePayload").value = jsonStringify(bridgeSample(tool));
+      });
+      document.getElementById("invokeBridgeTool").addEventListener("click", () => safeRun("bridgeOutput", "调用 Bridge 工具", () => requestJson(bridgeBase(), `/tools/${encodeURIComponent(document.getElementById("bridgeTool").value)}/invoke`, { method: "POST", body: readJsonTextarea("bridgePayload") })));
+
+      await safeRun("bridgeOutput", "刷新 Bridge 工具", refreshBridgeTools);
+      await safeRun("healthOutput", "执行全量联检", async () => {
+        const [apiHealth, apiReady] = await Promise.all([requestJson(apiBase(), "/healthz"), requestJson(apiBase(), "/readyz")]);
+        let bridgeHealth;
+        let bridgeReady;
+        try {
+          [bridgeHealth, bridgeReady] = await Promise.all([requestJson(bridgeBase(), "/healthz"), requestJson(bridgeBase(), "/readyz")]);
+        } catch (error) {
+          bridgeHealth = { status: "不可达", detail: error.payload ?? String(error) };
+          bridgeReady = { status: "未就绪" };
+        }
+        return { apiHealth, apiReady, bridgeHealth, bridgeReady };
+      });
+    });
+  </script>
+</body>
+</html>

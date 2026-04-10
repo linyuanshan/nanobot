@@ -21,14 +21,17 @@ dependencies = [
     "litellm>=1.0.0",
     "pydantic>=2.0.0",
     "pydantic-settings>=2.0.0",
+    "fastapi>=0.115.0",
     "websockets>=12.0",
     "websocket-client>=1.6.0",
     "httpx>=0.25.0",
     "loguru>=0.7.0",
+    "paho-mqtt>=2.1.0",
     "readability-lxml>=0.8.0",
     "rich>=13.0.0",
     "croniter>=2.0.0",
     "python-telegram-bot>=21.0",
+    "uvicorn>=0.32.0",
 ]
 
 [project.optional-dependencies]
@@ -43,28 +46,33 @@ dev = [
 
 [project.scripts]
 nanobot = "nanobot.cli.commands:app"
+hatchery-service = "hatchery.service_runner:main"
+hatchery-bridge = "hatchery.orchestrator_bridge.runner:main"
 
 [build-system]
 requires = ["hatchling"]
 build-backend = "hatchling.build"
 
 [tool.hatch.build.targets.wheel]
-packages = ["nanobot"]
+packages = ["nanobot", "hatchery"]
 
 [tool.hatch.build.targets.wheel.sources]
 "nanobot" = "nanobot"
+"hatchery" = "hatchery"
 
-# Include non-Python files in skills
 [tool.hatch.build]
 include = [
     "nanobot/**/*.py",
     "nanobot/skills/**/*.md",
     "nanobot/skills/**/*.sh",
+    "hatchery/**/*.py",
+    "hatchery/**/*.html",
 ]
 
 [tool.hatch.build.targets.sdist]
 include = [
     "nanobot/",
+    "hatchery/",
     "bridge/",
     "README.md",
     "LICENSE",

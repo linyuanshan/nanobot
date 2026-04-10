@@ -1,6 +1,7 @@
 """CLI commands for nanobot."""
 
 import asyncio
+import os
 from pathlib import Path
 
 import typer
@@ -156,6 +157,21 @@ This file stores important information that should persist across sessions.
 def gateway(
     port: int = typer.Option(18790, "--port", "-p", help="Gateway port"),
     verbose: bool = typer.Option(False, "--verbose", "-v", help="Verbose output"),
+    hatchery_bridge_url: str = typer.Option(
+        "",
+        "--hatchery-bridge-url",
+        help="Optional hatchery bridge URL, e.g. http://127.0.0.1:8190",
+    ),
+    hatchery_bridge_token: str = typer.Option(
+        "",
+        "--hatchery-bridge-token",
+        help="Optional hatchery bridge token (X-Hatchery-Token)",
+    ),
+    hatchery_actor: str = typer.Option(
+        "nanobot-gateway",
+        "--hatchery-actor",
+        help="Actor header for hatchery bridge calls (X-Hatchery-Actor)",
+    ),
 ):
     """Start the nanobot gateway."""
     from nanobot.config.loader import load_config, get_data_dir
@@ -207,6 +223,25 @@ def gateway(
         brave_api_key=config.tools.web.search.api_key or None,
         exec_config=config.tools.exec,
     )
+
+    resolved_bridge_url = hatchery_bridge_url.strip() or os.getenv("NANOBOT_HATCHERY_BRIDGE_URL", "").strip()
+    if resolved_bridge_url:
+        try:
+            from hatchery.orchestrator_bridge.nanobot_integration import register_hatchery_tools
+
+            registered = register_hatchery_tools(
+                agent.tools,
+                bridge_url=resolved_bridge_url,
+                bridge_token=hatchery_bridge_token,
+                actor=hatchery_actor,
+            )
+        except Exception as exc:
+            console.print(f"[red]Error: Failed to enable hatchery bridge tools: {exc}[/red]")
+            raise typer.Exit(1) from exc
+        console.print(
+            "[green]✓[/green] Hatchery bridge tools enabled "
+            f"({len(registered)}): {', '.join(registered)}"
+        )
     
     # Create cron service
     async def on_cron_job(job: CronJob) -> str | None:
